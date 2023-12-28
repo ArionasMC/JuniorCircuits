@@ -1,0 +1,15 @@
+{
+    "#left_panel": 
+    {
+        "colours":
+        {
+            "dark_bg": "#F7EFE5",
+            "normal_border": "#7743DB"
+        },
+
+        "misc":
+        {
+            "border_width": "3"
+        }
+    }
+}
