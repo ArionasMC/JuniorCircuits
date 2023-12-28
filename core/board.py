@@ -28,5 +28,10 @@ class Board(pygame.sprite.Sprite):
     def draw_grid(self):
         for x in range(self.dimX):
             pygame.draw.line(surface=self.surface, color=pygame.Color(195, 172, 208), 
-                             start_pos=(x*self.gridWidth, 0), end_pos=(x*self.gridWidth, self.dimY*self.gridHeight), width=2)
+                             start_pos=((x+0.5)*self.gridWidth, 0), 
+                             end_pos=((x+0.5)*self.gridWidth, self.dimY*self.gridHeight), width=2)
+        for y in range(self.dimY):
+            pygame.draw.line(surface=self.surface, color=pygame.Color(195, 172, 208),
+                             start_pos=(0, (y+0.5)*self.gridHeight),
+                             end_pos=(self.dimX*self.gridWidth, (y+0.5)*self.gridHeight), width=2)
         

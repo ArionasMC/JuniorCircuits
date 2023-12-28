@@ -16,7 +16,7 @@ background = pygame.Surface(window_size)
 background.fill(background_color)
 
 board_surface = pygame.Surface((580, 580))
-board = Board(20, 20, board_surface, background_color)
+board = Board(12, 12, board_surface, background_color)
 board.draw_grid()
 
 manager = pygame_gui.UIManager(window_size)
