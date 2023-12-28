@@ -1,6 +1,8 @@
 import numpy as np
 import pygame
 
+from core.component import Component
+
 class Board(pygame.sprite.Sprite):
     def __init__(self, dimX, dimY, surface, bg_color):
         super(Board, self).__init__()
@@ -12,6 +14,7 @@ class Board(pygame.sprite.Sprite):
         self.gridWidth = self.rect.w / self.dimX * 1.0
         self.gridHeight = self.rect.h / self.dimY * 1.0
         self.board = np.zeros(shape=[dimX, dimY], dtype=int)
+        self.components = []
 
     def insert(self, pos, item):
         self.board[pos[0], pos[1]] = item
@@ -34,4 +37,13 @@ class Board(pygame.sprite.Sprite):
             pygame.draw.line(surface=self.surface, color=pygame.Color(195, 172, 208),
                              start_pos=(0, (y+0.5)*self.gridHeight),
                              end_pos=(self.dimX*self.gridWidth, (y+0.5)*self.gridHeight), width=2)
+        
+    def update_components(self):
+        for i in range(self.dimX):
+            for j in range(self.dimY):
+                id = self.board[i, j]
+                if id == 1: # source
+                    source = Component("assets/sprites/source.png", (i+0.5)*self.gridWidth, (j+0.5)*self.gridHeight)
+                    self.components.append(source)
+
         

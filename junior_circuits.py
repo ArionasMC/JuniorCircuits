@@ -18,6 +18,11 @@ background.fill(background_color)
 board_surface = pygame.Surface((580, 580))
 board = Board(12, 12, board_surface, background_color)
 board.draw_grid()
+print("w,h=",board.gridWidth,board.gridHeight)
+
+board.insert((5,9), 1)
+board.update_components()
+#source = Component("assets/sprites/source.png")
 
 manager = pygame_gui.UIManager(window_size)
 manager.get_theme().load_theme("assets/themes/left_panel_theme.json")
@@ -47,6 +52,10 @@ while running:
 
     screen.blit(background, (0, 0))    
     screen.blit(board.surface, (210, 10))
+    #screen.blit(source.surface, (300, 300))
+
+    for com in board.components:
+        screen.blit(com.surface, (210+com.posX, 10+com.posY))
 
     manager.draw_ui(screen)
 
