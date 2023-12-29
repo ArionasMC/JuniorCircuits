@@ -65,14 +65,8 @@ class Board(pygame.sprite.Sprite):
                 if self.board[i, j] == EMPTY_ID:
                     self.points.append(AvailablePoint(i, j))
 
-    def draw_available_points(self):
-        for point in self.points:
-            posX = (point.i+0.5)*self.gridWidth-point.rect.w/2
-            posY = (point.j+0.5)*self.gridHeight-point.rect.h/2
-            self.surface.blit(point.surface, (posX, posY))
-
     def erase_and_clear_points(self):
-        print("erasing points...")
+        #print("erasing points...")
         for point in self.points:
             point.erase()
         self.points.clear()

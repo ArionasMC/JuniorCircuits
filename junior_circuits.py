@@ -69,9 +69,18 @@ debug_mode = False
 running = True
 
 show_available = False
+current_id = EMPTY_ID
+
 test_surface = pygame.Surface((100,100))
 test_rect = pygame.Rect(0,0,100,100)
 pygame.draw.rect(surface=test_surface, color=pygame.Color(0,0,0,255), rect=test_rect)
+
+def toggle_available_points():
+    global show_available
+    show_available = ~show_available
+    board.erase_and_clear_points()
+    if show_available:
+        board.update_available_points()
 
 while running:
     time_delta = clock.tick(60)/1000.0
@@ -84,11 +93,34 @@ while running:
                 debug_mode = ~debug_mode
                 manager.set_visual_debug_mode(debug_mode)
             if event.key == pygame.K_r:
-                show_available = ~show_available
-                board.erase_and_clear_points()
-                if show_available:
-                    board.update_available_points()
-                pass
+                toggle_available_points()
+
+        if event.type == pygame_gui.UI_BUTTON_PRESSED:
+            if event.ui_element == r_button:
+                current_id = RESISTANCE_ID
+                if not(show_available):
+                    toggle_available_points()
+            if event.ui_element == a_button:
+                current_id = AMPEROMETER_ID
+                if not(show_available):
+                    toggle_available_points()
+            if event.ui_element == v_button:
+                current_id = VOLTOMETER_ID
+                if not(show_available):
+                    toggle_available_points()
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if show_available:
+                #print('click(down)')
+                mx, my = pygame.mouse.get_pos()
+                print(mx, my)
+                for point in board.points:
+                    if point.clicked_me(mx, my):
+                        print('i,j=',point.i,point.j)
+                        toggle_available_points()
+                        board.insert((point.i, point.j), current_id)
+                        board.update_components()
+                        current_id = EMPTY_ID
 
         manager.process_events(event)
 
@@ -101,8 +133,11 @@ while running:
         screen.blit(com.surface, (210+com.posX, 10+com.posY))
 
     if show_available:
-        #screen.blit(test_surface, (200, 200))
-        board.draw_available_points()
+        for point in board.points:
+            posX = (point.i+0.5)*board.gridWidth-point.rect.w/2+210
+            posY = (point.j+0.5)*board.gridHeight-point.rect.h/2+10
+            screen.blit(point.surface, (posX, posY))
+            point.rect = pygame.Rect(posX, posY, POINT_SIZE, POINT_SIZE)
 
 
     manager.draw_ui(screen)
