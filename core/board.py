@@ -3,6 +3,8 @@ import pygame
 
 from core.component import Component
 from core.constants import *
+from components.source import Source
+from components.resistance import Resistance
 
 class Board(pygame.sprite.Sprite):
     def __init__(self, dimX, dimY, surface, bg_color):
@@ -40,20 +42,18 @@ class Board(pygame.sprite.Sprite):
                              end_pos=(self.dimX*self.gridWidth, (y+0.5)*self.gridHeight), width=2)
         
     def update_components(self):
+        self.components.clear()
         for i in range(self.dimX):
             for j in range(self.dimY):
                 id = self.board[i, j]
                 x = (i+0.5)*self.gridWidth
                 y = (j+0.5)*self.gridHeight
-                if id == SOURCE_ID: # source
-                    source = Component("assets/sprites/source.png", x, y)
-                    self.components.append(source)
-                if id == RESISTANCE_ID: # resistance
-                    r = Component("assets/sprites/resistance.png", x, y)
-                    self.components.append(r)
-                if id == AMPEROMETER_ID: # amperometer
-                    a = Component("assets/sprites/amperometer.png", x, y)
-                    self.components.append(a)
+                if id == SOURCE_ID:
+                    self.components.append(Source(x, y, DEFAULT_VOLTAGE))
+                if id == RESISTANCE_ID:
+                    self.components.append(Resistance(x, y, DEFAULT_RESISTANCE))
+                if id == AMPEROMETER_ID:
+                    self.components.append(Component("assets/sprites/amperometer.png", x, y))
                 if id == VOLTOMETER_ID: # voltometer
                     self.components.append(Component("assets/sprites/voltometer.png", x, y))
 
