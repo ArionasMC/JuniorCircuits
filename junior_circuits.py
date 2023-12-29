@@ -1,6 +1,11 @@
 import pygame
 import pygame_gui
 
+from pygame_gui.core import ObjectID
+from pygame_gui.elements import UIPanel
+from pygame_gui.elements import UIButton
+from pygame_gui.elements import UILabel
+
 from core.board import Board
 from core.constants import *
 
@@ -34,7 +39,31 @@ manager.get_theme().load_theme("assets/themes/left_panel_theme.json")
 
 # GUI Objects
 left_panel_rect = pygame.Rect(-5, -5, 200, HEIGHT+15)
-left_panel = pygame_gui.elements.UIPanel(relative_rect=left_panel_rect, manager=manager, object_id="#left_panel")
+left_panel = UIPanel(relative_rect=left_panel_rect, manager=manager, object_id="#left_panel")
+
+r_button_rect = pygame.Rect(20, 50, 150, 60)
+r_button = UIButton(relative_rect=r_button_rect, manager=manager, text="",
+                    object_id=ObjectID(class_id="@left_panel_buttons", object_id="#r_button"),
+                    container=left_panel)
+r_text_rect = pygame.Rect(20, 30, 150, 20)
+r_text = UILabel(relative_rect=r_text_rect, manager=manager, container=left_panel, text="Αντίσταση",
+                 object_id="#button_texts")
+
+a_button_rect = pygame.Rect(20, 160, 150, 60)
+a_button = UIButton(relative_rect=a_button_rect, manager=manager, text="",
+                    object_id=ObjectID(class_id="@left_panel_buttons", object_id="#a_button"),
+                    container=left_panel)
+a_text_tect = pygame.Rect(20, 140, 150, 20)
+a_text = UILabel(relative_rect=a_text_tect, manager=manager, text="Αμπερόμετρο",
+                 object_id="#button_texts")
+
+v_button_rect = pygame.Rect(20, 270, 150, 60)
+v_button = UIButton(relative_rect=v_button_rect, manager=manager, text="",
+                    object_id=ObjectID(class_id="@left_panel_buttons", object_id="#v_button"),
+                    container=left_panel)
+v_text_tect = pygame.Rect(20, 250, 150, 20)
+v_text = UILabel(relative_rect=v_text_tect, manager=manager, text="Βολτόμετρο",
+                 object_id="#button_texts")
 
 clock = pygame.time.Clock()
 debug_mode = False

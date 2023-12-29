@@ -11,5 +11,59 @@
         {
             "border_width": "3"
         }
+    },
+    "@left_panel_buttons":
+    {
+        "colours":
+        {
+            "normal_bg": "#C499F3",
+            "hovered_bg": "#F2AFEF",
+            "active_bg": "#7360DF",
+            "normal_text": "#33186B",
+            "hovered_text": "#33186B",
+            "active_text": "#33186B"
+        },
+        "misc":
+        {
+            "shape": "rounded_rectangle",
+            "shape_corner_radius": "5"
+        }
+    },
+    "#r_button":
+    {
+        "images":
+        {
+            "normal_image": 
+            {
+                "path": "assets/sprites/resistance.png"
+            }
+        }
+    },
+    "#a_button":
+    {
+        "images":
+        {
+            "normal_image": 
+            {
+                "path": "assets/sprites/amperometer.png"
+            }
+        }
+    },
+    "#v_button":
+    {
+        "images":
+        {
+            "normal_image": 
+            {
+                "path": "assets/sprites/voltometer.png"
+            }
+        }
+    },
+    "#button_texts":
+    {
+        "colours":
+        {
+            "normal_text": "#7743DB"
+        }
     }
 }
