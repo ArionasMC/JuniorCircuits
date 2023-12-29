@@ -2,6 +2,7 @@ import pygame
 import pygame_gui
 
 from core.board import Board
+from core.constants import *
 
 pygame.init()
 
@@ -20,7 +21,11 @@ board = Board(12, 12, board_surface, background_color)
 board.draw_grid()
 print("w,h=",board.gridWidth,board.gridHeight)
 
-board.insert((5,9), 1)
+board.insert((4,9), RESISTANCE_ID)
+board.insert((5,9), SOURCE_ID)
+board.insert((6,9), RESISTANCE_ID)
+board.insert((7,9), AMPEROMETER_ID)
+board.insert((6,5), VOLTOMETER_ID)
 board.update_components()
 #source = Component("assets/sprites/source.png")
 

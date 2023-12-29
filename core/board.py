@@ -2,6 +2,7 @@ import numpy as np
 import pygame
 
 from core.component import Component
+from core.constants import *
 
 class Board(pygame.sprite.Sprite):
     def __init__(self, dimX, dimY, surface, bg_color):
@@ -42,8 +43,18 @@ class Board(pygame.sprite.Sprite):
         for i in range(self.dimX):
             for j in range(self.dimY):
                 id = self.board[i, j]
-                if id == 1: # source
-                    source = Component("assets/sprites/source.png", (i+0.5)*self.gridWidth, (j+0.5)*self.gridHeight)
+                x = (i+0.5)*self.gridWidth
+                y = (j+0.5)*self.gridHeight
+                if id == SOURCE_ID: # source
+                    source = Component("assets/sprites/source.png", x, y)
                     self.components.append(source)
+                if id == RESISTANCE_ID: # resistance
+                    r = Component("assets/sprites/resistance.png", x, y)
+                    self.components.append(r)
+                if id == AMPEROMETER_ID: # amperometer
+                    a = Component("assets/sprites/amperometer.png", x, y)
+                    self.components.append(a)
+                if id == VOLTOMETER_ID: # voltometer
+                    self.components.append(Component("assets/sprites/voltometer.png", x, y))
 
         
