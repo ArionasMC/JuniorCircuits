@@ -2,6 +2,7 @@ import numpy as np
 import pygame
 
 from core.component import Component
+from core.available_point import AvailablePoint
 from core.constants import *
 from components.source import Source
 from components.resistance import Resistance
@@ -18,6 +19,7 @@ class Board(pygame.sprite.Sprite):
         self.gridHeight = self.rect.h / self.dimY * 1.0
         self.board = np.zeros(shape=[dimX, dimY], dtype=int)
         self.components = []
+        self.points = []
 
     def insert(self, pos, item):
         self.board[pos[0], pos[1]] = item
@@ -54,7 +56,23 @@ class Board(pygame.sprite.Sprite):
                     self.components.append(Resistance(x, y, DEFAULT_RESISTANCE))
                 if id == AMPEROMETER_ID:
                     self.components.append(Component("assets/sprites/amperometer.png", x, y))
-                if id == VOLTOMETER_ID: # voltometer
+                if id == VOLTOMETER_ID:
                     self.components.append(Component("assets/sprites/voltometer.png", x, y))
 
-        
+    def update_available_points(self):
+        for i in range(self.dimX):
+            for j in range(self.dimY):
+                if self.board[i, j] == EMPTY_ID:
+                    self.points.append(AvailablePoint(i, j))
+
+    def draw_available_points(self):
+        for point in self.points:
+            posX = (point.i+0.5)*self.gridWidth-point.rect.w/2
+            posY = (point.j+0.5)*self.gridHeight-point.rect.h/2
+            self.surface.blit(point.surface, (posX, posY))
+
+    def erase_and_clear_points(self):
+        print("erasing points...")
+        for point in self.points:
+            point.erase()
+        self.points.clear()

@@ -32,12 +32,11 @@ board.insert((6,9), RESISTANCE_ID)
 board.insert((7,9), AMPEROMETER_ID)
 board.insert((6,5), VOLTOMETER_ID)
 board.update_components()
-#source = Component("assets/sprites/source.png")
 
 manager = pygame_gui.UIManager(window_size)
 manager.get_theme().load_theme("assets/themes/left_panel_theme.json")
 
-# GUI Objects
+##### GUI Objects #####
 left_panel_rect = pygame.Rect(-5, -5, 200, HEIGHT+15)
 left_panel = UIPanel(relative_rect=left_panel_rect, manager=manager, object_id="#left_panel")
 
@@ -69,6 +68,11 @@ clock = pygame.time.Clock()
 debug_mode = False
 running = True
 
+show_available = False
+test_surface = pygame.Surface((100,100))
+test_rect = pygame.Rect(0,0,100,100)
+pygame.draw.rect(surface=test_surface, color=pygame.Color(0,0,0,255), rect=test_rect)
+
 while running:
     time_delta = clock.tick(60)/1000.0
     for event in pygame.event.get():
@@ -79,6 +83,12 @@ while running:
             if event.key == pygame.K_d:
                 debug_mode = ~debug_mode
                 manager.set_visual_debug_mode(debug_mode)
+            if event.key == pygame.K_r:
+                show_available = ~show_available
+                board.erase_and_clear_points()
+                if show_available:
+                    board.update_available_points()
+                pass
 
         manager.process_events(event)
 
@@ -86,10 +96,14 @@ while running:
 
     screen.blit(background, (0, 0))    
     screen.blit(board.surface, (210, 10))
-    #screen.blit(source.surface, (300, 300))
 
     for com in board.components:
         screen.blit(com.surface, (210+com.posX, 10+com.posY))
+
+    if show_available:
+        #screen.blit(test_surface, (200, 200))
+        board.draw_available_points()
+
 
     manager.draw_ui(screen)
 
