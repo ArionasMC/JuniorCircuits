@@ -8,6 +8,8 @@ from pygame_gui.elements import UILabel
 
 from core.board import Board
 from core.constants import *
+from core.component import Component
+from components.resistance import Resistance
 
 pygame.init()
 
@@ -26,11 +28,7 @@ board = Board(12, 12, board_surface, background_color)
 board.draw_grid()
 print("w,h=",board.gridWidth,board.gridHeight)
 
-board.insert((4,9), RESISTANCE_ID)
 board.insert((5,9), SOURCE_ID)
-board.insert((6,9), RESISTANCE_ID)
-board.insert((7,9), AMPEROMETER_ID)
-board.insert((6,5), VOLTOMETER_ID)
 board.update_components()
 
 manager = pygame_gui.UIManager(window_size)
@@ -75,6 +73,9 @@ test_surface = pygame.Surface((100,100))
 test_rect = pygame.Rect(0,0,100,100)
 pygame.draw.rect(surface=test_surface, color=pygame.Color(0,0,0,255), rect=test_rect)
 
+mouse_rect = pygame.Rect(0,0,49,49)
+mouse_component = 0
+
 def toggle_available_points():
     global show_available
     show_available = ~show_available
@@ -84,6 +85,10 @@ def toggle_available_points():
 
 while running:
     time_delta = clock.tick(60)/1000.0
+
+    mouse_rect.x = pygame.mouse.get_pos()[0] - mouse_rect.w/2
+    mouse_rect.y = pygame.mouse.get_pos()[1] - mouse_rect.h/2
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -98,14 +103,17 @@ while running:
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
             if event.ui_element == r_button:
                 current_id = RESISTANCE_ID
+                mouse_component = Resistance(mouse_rect.x, mouse_rect.y, 0)
                 if not(show_available):
                     toggle_available_points()
             if event.ui_element == a_button:
                 current_id = AMPEROMETER_ID
+                mouse_component = Component("assets/sprites/amperometer.png", mouse_rect.x, mouse_rect.y)
                 if not(show_available):
                     toggle_available_points()
             if event.ui_element == v_button:
                 current_id = VOLTOMETER_ID
+                mouse_component = Component("assets/sprites/voltometer.png", mouse_rect.x, mouse_rect.y)
                 if not(show_available):
                     toggle_available_points()
 
@@ -121,6 +129,7 @@ while running:
                         board.insert((point.i, point.j), current_id)
                         board.update_components()
                         current_id = EMPTY_ID
+                        mouse_component = 0
 
         manager.process_events(event)
 
@@ -139,6 +148,9 @@ while running:
             screen.blit(point.surface, (posX, posY))
             point.rect = pygame.Rect(posX, posY, POINT_SIZE, POINT_SIZE)
 
+    if mouse_component != 0:
+        screen.blit(mouse_component.surface, (mouse_rect.x, mouse_rect.y))
+    #pygame.draw.rect(surface=screen, color=pygame.Color(0,0,0), rect=mouse_rect)
 
     manager.draw_ui(screen)
 
