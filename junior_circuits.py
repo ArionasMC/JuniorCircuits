@@ -58,9 +58,14 @@ v_button_rect = pygame.Rect(20, 270, 150, 60)
 v_button = UIButton(relative_rect=v_button_rect, manager=manager, text="",
                     object_id=ObjectID(class_id="@left_panel_buttons", object_id="#v_button"),
                     container=left_panel)
-v_text_tect = pygame.Rect(20, 250, 150, 20)
-v_text = UILabel(relative_rect=v_text_tect, manager=manager, text="Βολτόμετρο",
+v_text_rect = pygame.Rect(20, 250, 150, 20)
+v_text = UILabel(relative_rect=v_text_rect, manager=manager, text="Βολτόμετρο",
                  object_id="#button_texts")
+
+line_button_rect = pygame.Rect(20, 380, 150, 60)
+line_button = UIButton(relative_rect=line_button_rect, manager=manager, text="Καλώδιο",
+                       object_id=ObjectID(class_id="@left_panel_buttons", object_id="#line_button"),
+                       container=left_panel)
 
 clock = pygame.time.Clock()
 debug_mode = False
@@ -116,6 +121,11 @@ while running:
                 mouse_component = Component("assets/sprites/voltometer.png", mouse_rect.x, mouse_rect.y)
                 if not(show_available):
                     toggle_available_points()
+            if event.ui_element == line_button:
+                current_id = LINE_ID
+                mouse_component = Component("assets/sprites/line.png", mouse_rect.x, mouse_rect.y)
+                if not(show_available):
+                    toggle_available_points()
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if show_available:
@@ -141,6 +151,9 @@ while running:
     for com in board.components:
         screen.blit(com.surface, (210+com.posX, 10+com.posY))
 
+    for wire in board.wires:
+        screen.blit(wire.surface, (210+wire.surface_x, 10+wire.surface_y))
+
     if show_available:
         for point in board.points:
             posX = (point.i+0.5)*board.gridWidth-point.rect.w/2+210
@@ -149,6 +162,8 @@ while running:
             point.rect = pygame.Rect(posX, posY, POINT_SIZE, POINT_SIZE)
 
     if mouse_component != 0:
+        if current_id == LINE_ID:
+            mouse_rect.y += mouse_rect.h/2
         screen.blit(mouse_component.surface, (mouse_rect.x, mouse_rect.y))
     #pygame.draw.rect(surface=screen, color=pygame.Color(0,0,0), rect=mouse_rect)
 

@@ -6,6 +6,7 @@ from core.available_point import AvailablePoint
 from core.constants import *
 from components.source import Source
 from components.resistance import Resistance
+from components.wire import Wire
 
 class Board(pygame.sprite.Sprite):
     def __init__(self, dimX, dimY, surface, bg_color):
@@ -20,6 +21,7 @@ class Board(pygame.sprite.Sprite):
         self.board = np.zeros(shape=[dimX, dimY], dtype=int)
         self.components = []
         self.points = []
+        self.wires = []
 
     def insert(self, pos, item):
         self.board[pos[0], pos[1]] = item
@@ -58,6 +60,17 @@ class Board(pygame.sprite.Sprite):
                     self.components.append(Component("assets/sprites/amperometer.png", x, y))
                 if id == VOLTOMETER_ID:
                     self.components.append(Component("assets/sprites/voltometer.png", x, y))
+                if id == LINE_ID:
+                    up, right, down, left = True, True, True, True
+                    if ((j-1) > 0) and self.board[i, j-1] != EMPTY_ID:
+                        up = False
+                    if ((j+1) < self.dimY) and self.board[i, j+1] != EMPTY_ID:
+                        down = False
+                    if ((i-1) > 0) and self.board[i-1, j] != EMPTY_ID:
+                        left = False
+                    if ((i+1) < self.dimX) and self.board[i+1, j] != EMPTY_ID:
+                        right = False
+                    self.wires.append(Wire(up, right, down, left, x, y))
 
     def update_available_points(self):
         for i in range(self.dimX):
