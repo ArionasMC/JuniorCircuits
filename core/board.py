@@ -62,14 +62,34 @@ class Board(pygame.sprite.Sprite):
                     self.components.append(Component("assets/sprites/voltometer.png", x, y))
                 if id == LINE_ID:
                     up, right, down, left = True, True, True, True
-                    if ((j-1) > 0) and self.board[i, j-1] != EMPTY_ID:
+                    if (j-1) < 0: 
                         up = False
-                    if ((j+1) < self.dimY) and self.board[i, j+1] != EMPTY_ID:
+                    else:
+                        #print(self.board[i, j-1])
+                        if self.board[i, j-1] == EMPTY_ID: 
+                            up = False
+
+                    if (j+1) > self.dimY:
                         down = False
-                    if ((i-1) > 0) and self.board[i-1, j] != EMPTY_ID:
+                    else:
+                        #print(self.board[i, j+1])
+                        if self.board[i, j+1] == EMPTY_ID:
+                            down = False
+
+                    if (i-1) < 0:
                         left = False
-                    if ((i+1) < self.dimX) and self.board[i+1, j] != EMPTY_ID:
+                    else:
+                        #print(self.board[i-1, j])
+                        if self.board[i-1, j] == EMPTY_ID:
+                            left = False
+
+                    if (i+1) > self.dimX:
                         right = False
+                    else:
+                        #print(self.board[i+1, j])
+                        if self.board[i+1, j] == EMPTY_ID:
+                            right = False
+                    print('u=',up,'r=',right,'d=',down,'l=',left)
                     self.wires.append(Wire(up, right, down, left, x, y))
 
     def update_available_points(self):
