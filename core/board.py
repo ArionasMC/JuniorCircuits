@@ -19,7 +19,7 @@ class Board(pygame.sprite.Sprite):
         self.gridWidth = self.rect.w / self.dimX * 1.0
         self.gridHeight = self.rect.h / self.dimY * 1.0
         self.board = np.zeros(shape=[dimX, dimY], dtype=int)
-        self.components = []
+        self.components = [] # tuples (Component, (pos_i, pos_j))
         self.points = []
         self.wires = []
 
@@ -54,15 +54,15 @@ class Board(pygame.sprite.Sprite):
                 x = (i+0.5)*self.gridWidth
                 y = (j+0.5)*self.gridHeight
                 if id == SOURCE_ID:
-                    self.components.append(Source(x, y, DEFAULT_VOLTAGE))
+                    self.components.append((Source(x, y, DEFAULT_VOLTAGE), (i, j)))
                 if id == RESISTANCE_ID:
-                    self.components.append(Resistance(x, y, DEFAULT_RESISTANCE))
+                    self.components.append((Resistance(x, y, DEFAULT_RESISTANCE), (i, j)))
                 if id == AMPEROMETER_ID:
-                    self.components.append(Component("assets/sprites/amperometer.png", x, y, True))
+                    self.components.append((Component("assets/sprites/amperometer.png", x, y, True), (i, j)))
                 if id == VOLTOMETER_ID:
-                    self.components.append(Component("assets/sprites/voltometer.png", x, y, True))
+                    self.components.append((Component("assets/sprites/voltometer.png", x, y, True), (i, j)))
                 if id == LINE_ID:
-                    up, right, down, left = True, True, True, True
+                    up, right, down, left = True, True, True, True # change it to more compact code
                     if (j-1) < 0: 
                         up = False
                     else:
@@ -93,14 +93,50 @@ class Board(pygame.sprite.Sprite):
                     print('u=',up,'r=',right,'d=',down,'l=',left)
                     self.wires.append(Wire(up, right, down, left, x, y))
 
-    def update_available_points(self):
-        for i in range(self.dimX):
-            for j in range(self.dimY):
-                if self.board[i, j] == EMPTY_ID:
-                    self.points.append(AvailablePoint(i, j))
+    def update_available_points(self, current_id): # change it later
+        if current_id == LINE_ID:
+            for i in range(self.dimX):
+                for j in range(self.dimY):
+                    if self.board[i, j] != EMPTY_ID:
+                        self.points.append(AvailablePoint(i, j))
+        else:
+            for i in range(self.dimX):
+                for j in range(self.dimY):
+                    if self.board[i, j] == EMPTY_ID:
+                        self.points.append(AvailablePoint(i, j))
+
+    def update_points_for_second_wire(self, first_point):
+        fpi, fpj = first_point[0], first_point[1]
+        if self.is_horizontal_at(fpi, fpj):
+            li = fpi-1
+            # Check left
+            while (li >= 0) and (self.board[li, fpj] == EMPTY_ID):
+                self.points.append(AvailablePoint(li,fpj))
+                li -=1
+            li = fpi+1
+            while (li < self.dimX) and (self.board[li, fpj] == EMPTY_ID):
+                self.points.append(AvailablePoint(li, fpj))
+                li +=1
+        else:
+            lj = fpj-1
+            while (lj >= 0) and (self.board[fpi, lj] == EMPTY_ID):
+                self.points.append(AvailablePoint(fpi,lj))
+                lj -=1
+            lj = fpj+1
+            while (lj < self.dimY) and (self.board[fpi, lj] == EMPTY_ID):
+                self.points.append(AvailablePoint(fpi, lj))
+                lj +=1
+
+    def is_horizontal_at(self, i, j):
+        for (com, pos) in self.components:
+            if (pos[0] == i) and (pos[1] == j):
+                return com.horizontal 
 
     def erase_and_clear_points(self):
         #print("erasing points...")
         for point in self.points:
             point.erase()
         self.points.clear()
+
+    def is_empty_at(self, pos_i, pos_j):
+        return self.board[pos_i, pos_j] == EMPTY_ID

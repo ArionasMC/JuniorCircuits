@@ -73,6 +73,8 @@ running = True
 
 show_available = False
 current_id = EMPTY_ID
+first_point = (0,0)
+second_time = False
 
 test_surface = pygame.Surface((100,100))
 test_rect = pygame.Rect(0,0,100,100)
@@ -83,10 +85,41 @@ mouse_component = 0
 
 def toggle_available_points():
     global show_available
+    global current_id
     show_available = ~show_available
     board.erase_and_clear_points()
     if show_available:
-        board.update_available_points()
+        board.update_available_points(current_id)
+
+def toggle_second_wire_points():
+    global show_available
+    global first_point
+    global second_time
+    show_available = ~show_available
+    second_time = ~second_time
+    board.erase_and_clear_points()
+    if show_available:
+        board.update_points_for_second_wire(first_point)
+
+# Only horizontal and vertical lines are allowed (for simplicity)
+def place_wires(first_point, second_point):
+    (x1, y1) = first_point
+    (x2, y2) = second_point
+    if y1 == y2: # horizontal line
+        x_min = min(x1, x2)
+        x_max = max(x1, x2)
+        while x_min <= x_max:
+            if board.is_empty_at(x_min, y1):
+                board.insert((x_min, y1), LINE_ID)
+            x_min += 1
+    else: # vertical line
+        y_min = min(y1, y2)
+        y_max = max(y1, y2)
+        while y_min <= y_max:
+            if board.is_empty_at(x1, y_min):
+                board.insert((x1, y_min), LINE_ID)
+            y_min +=1
+    board.update_components()
 
 while running:
     time_delta = clock.tick(60)/1000.0
@@ -106,6 +139,10 @@ while running:
                 toggle_available_points()
 
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
+            if show_available:
+                toggle_available_points()
+            if second_time:
+                second_time = False
             if event.ui_element == r_button:
                 current_id = RESISTANCE_ID
                 mouse_component = Resistance(mouse_rect.x, mouse_rect.y, 0)
@@ -134,12 +171,25 @@ while running:
                 print(mx, my)
                 for point in board.points:
                     if point.clicked_me(mx, my):
-                        print('i,j=',point.i,point.j)
-                        toggle_available_points()
-                        board.insert((point.i, point.j), current_id)
-                        board.update_components()
-                        current_id = EMPTY_ID
-                        mouse_component = 0
+                        if current_id == LINE_ID:
+                            if second_time:
+                                second_point = (point.i, point.j)
+                                place_wires(first_point, second_point)
+                                toggle_second_wire_points()
+                                
+                                pass
+                            else:
+                                first_point = (point.i, point.j)
+                                toggle_available_points() # remove points
+                                toggle_second_wire_points() # show wire points
+                            mouse_component = 0
+                        else:
+                            print('i,j=',point.i,point.j)
+                            toggle_available_points()
+                            board.insert((point.i, point.j), current_id)
+                            board.update_components()
+                            current_id = EMPTY_ID
+                            mouse_component = 0
 
         manager.process_events(event)
 
@@ -148,7 +198,7 @@ while running:
     screen.blit(background, (0, 0))    
     screen.blit(board.surface, (210, 10))
 
-    for com in board.components:
+    for (com, cell) in board.components:
         screen.blit(com.surface, (210+com.posX, 10+com.posY))
 
     for wire in board.wires:
