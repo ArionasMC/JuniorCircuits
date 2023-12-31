@@ -107,26 +107,39 @@ class Board(pygame.sprite.Sprite):
 
     def update_points_for_second_wire(self, first_point):
         fpi, fpj = first_point[0], first_point[1]
-        if self.is_horizontal_at(fpi, fpj):
-            li = fpi-1
-            # Check left
-            while (li >= 0) and (self.board[li, fpj] == EMPTY_ID):
-                self.points.append(AvailablePoint(li,fpj))
-                li -=1
-            li = fpi+1
-            while (li < self.dimX) and (self.board[li, fpj] == EMPTY_ID):
-                self.points.append(AvailablePoint(li, fpj))
-                li +=1
-        else:
-            lj = fpj-1
-            while (lj >= 0) and (self.board[fpi, lj] == EMPTY_ID):
-                self.points.append(AvailablePoint(fpi,lj))
-                lj -=1
-            lj = fpj+1
-            while (lj < self.dimY) and (self.board[fpi, lj] == EMPTY_ID):
-                self.points.append(AvailablePoint(fpi, lj))
-                lj +=1
+        if self.board[fpi, fpj] != LINE_ID:
+            if self.is_horizontal_at(fpi, fpj):
+                self.fill_points_horizontally(fpi, fpj)
+            else:
+                self.fill_points_vertically(fpi, fpj)
+        else: # if first point is wire then available points are both vertical and horizontal
+            self.fill_points_horizontally(fpi, fpj)
+            self.fill_points_vertically(fpi, fpj)
 
+    def fill_points_horizontally(self, fpi, fpj):
+        li = fpi - 1
+        # Check left
+        while (li >= 0) and (self.board[li, fpj] == EMPTY_ID):
+            self.points.append(AvailablePoint(li, fpj))
+            li -= 1
+        li = fpi + 1
+        # Check right
+        while (li < self.dimX) and (self.board[li, fpj] == EMPTY_ID):
+            self.points.append(AvailablePoint(li, fpj))
+            li += 1
+
+    def fill_points_vertically(self, fpi, fpj):
+        lj = fpj - 1
+        # Check up
+        while (lj >= 0) and (self.board[fpi, lj] == EMPTY_ID):
+            self.points.append(AvailablePoint(fpi, lj))
+            lj -= 1
+        lj = fpj + 1
+        # Check down
+        while (lj < self.dimY) and (self.board[fpi, lj] == EMPTY_ID):
+            self.points.append(AvailablePoint(fpi, lj))
+            lj += 1
+    
     def is_horizontal_at(self, i, j):
         for (com, pos) in self.components:
             if (pos[0] == i) and (pos[1] == j):
