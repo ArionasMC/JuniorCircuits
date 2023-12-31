@@ -47,6 +47,7 @@ class Board(pygame.sprite.Sprite):
         
     def update_components(self):
         self.components.clear()
+        self.wires.clear()
         for i in range(self.dimX):
             for j in range(self.dimY):
                 id = self.board[i, j]
@@ -57,23 +58,23 @@ class Board(pygame.sprite.Sprite):
                 if id == RESISTANCE_ID:
                     self.components.append(Resistance(x, y, DEFAULT_RESISTANCE))
                 if id == AMPEROMETER_ID:
-                    self.components.append(Component("assets/sprites/amperometer.png", x, y))
+                    self.components.append(Component("assets/sprites/amperometer.png", x, y, True))
                 if id == VOLTOMETER_ID:
-                    self.components.append(Component("assets/sprites/voltometer.png", x, y))
+                    self.components.append(Component("assets/sprites/voltometer.png", x, y, True))
                 if id == LINE_ID:
                     up, right, down, left = True, True, True, True
                     if (j-1) < 0: 
                         up = False
                     else:
                         #print(self.board[i, j-1])
-                        if self.board[i, j-1] == EMPTY_ID: 
+                        if (self.board[i, j-1] == EMPTY_ID) or (self.board[i, j-1] == SOURCE_ID): 
                             up = False
 
-                    if (j+1) > self.dimY:
+                    if (j+1) >= self.dimY:
                         down = False
                     else:
                         #print(self.board[i, j+1])
-                        if self.board[i, j+1] == EMPTY_ID:
+                        if (self.board[i, j+1] == EMPTY_ID) or (self.board[i, j+1] == SOURCE_ID):
                             down = False
 
                     if (i-1) < 0:
@@ -83,7 +84,7 @@ class Board(pygame.sprite.Sprite):
                         if self.board[i-1, j] == EMPTY_ID:
                             left = False
 
-                    if (i+1) > self.dimX:
+                    if (i+1) >= self.dimX:
                         right = False
                     else:
                         #print(self.board[i+1, j])

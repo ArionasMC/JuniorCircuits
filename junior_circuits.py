@@ -113,17 +113,17 @@ while running:
                     toggle_available_points()
             if event.ui_element == a_button:
                 current_id = AMPEROMETER_ID
-                mouse_component = Component("assets/sprites/amperometer.png", mouse_rect.x, mouse_rect.y)
+                mouse_component = Component("assets/sprites/amperometer.png", mouse_rect.x, mouse_rect.y, True)
                 if not(show_available):
                     toggle_available_points()
             if event.ui_element == v_button:
                 current_id = VOLTOMETER_ID
-                mouse_component = Component("assets/sprites/voltometer.png", mouse_rect.x, mouse_rect.y)
+                mouse_component = Component("assets/sprites/voltometer.png", mouse_rect.x, mouse_rect.y, True)
                 if not(show_available):
                     toggle_available_points()
             if event.ui_element == line_button:
                 current_id = LINE_ID
-                mouse_component = Component("assets/sprites/line.png", mouse_rect.x, mouse_rect.y)
+                mouse_component = Component("assets/sprites/line.png", mouse_rect.x, mouse_rect.y, True)
                 if not(show_available):
                     toggle_available_points()
 
