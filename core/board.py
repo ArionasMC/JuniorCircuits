@@ -126,6 +126,12 @@ class Board(pygame.sprite.Sprite):
                     if self.board[i, j] == EMPTY_ID:
                         self.points.append(AvailablePoint(i, j))
 
+    def update_points_for_deletion(self):
+        for i in range(self.dimX):
+            for j in range(self.dimY):
+                if (self.board[i, j] != EMPTY_ID) and (self.board[i, j] != SOURCE_ID):
+                    self.points.append(AvailablePoint(i, j, DELETE_COLOR))
+
     def update_points_for_second_wire(self, first_point):
         fpi, fpj = first_point[0], first_point[1]
         if self.board[fpi, fpj] != LINE_ID:

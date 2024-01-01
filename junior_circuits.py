@@ -38,34 +38,61 @@ manager.get_theme().load_theme("assets/themes/left_panel_theme.json")
 left_panel_rect = pygame.Rect(-5, -5, 200, HEIGHT+15)
 left_panel = UIPanel(relative_rect=left_panel_rect, manager=manager, object_id="#left_panel")
 
-r_button_rect = pygame.Rect(20, 50, 150, 60)
+BUTTON_H = 50
+STARTING_Y = 10
+TEXT_OFFSET_Y = 20
+ELEMENT_OFFSET_Y = 60
+r_button_rect = pygame.Rect(20, STARTING_Y+TEXT_OFFSET_Y*1, 150, BUTTON_H)
 r_button = UIButton(relative_rect=r_button_rect, manager=manager, text="",
                     object_id=ObjectID(class_id="@left_panel_buttons", object_id="#r_button"),
                     container=left_panel)
-r_text_rect = pygame.Rect(20, 30, 150, 20)
+r_text_rect = pygame.Rect(20, STARTING_Y, 150, 20)
 r_text = UILabel(relative_rect=r_text_rect, manager=manager, container=left_panel, text="Αντίσταση",
                  object_id="#button_texts")
 
-a_button_rect = pygame.Rect(20, 160, 150, 60)
+a_button_rect = pygame.Rect(20, STARTING_Y+TEXT_OFFSET_Y*2+ELEMENT_OFFSET_Y*1, 150, BUTTON_H)
 a_button = UIButton(relative_rect=a_button_rect, manager=manager, text="",
                     object_id=ObjectID(class_id="@left_panel_buttons", object_id="#a_button"),
                     container=left_panel)
-a_text_tect = pygame.Rect(20, 140, 150, 20)
-a_text = UILabel(relative_rect=a_text_tect, manager=manager, text="Αμπερόμετρο",
+a_text_rect = pygame.Rect(20, STARTING_Y+TEXT_OFFSET_Y*1+ELEMENT_OFFSET_Y*1, 150, 20)
+a_text = UILabel(relative_rect=a_text_rect, manager=manager, text="Αμπερόμετρο",
                  object_id="#button_texts")
 
-v_button_rect = pygame.Rect(20, 270, 150, 60)
+v_button_rect = pygame.Rect(20, STARTING_Y+TEXT_OFFSET_Y*3+ELEMENT_OFFSET_Y*2, 150, BUTTON_H)
 v_button = UIButton(relative_rect=v_button_rect, manager=manager, text="",
                     object_id=ObjectID(class_id="@left_panel_buttons", object_id="#v_button"),
                     container=left_panel)
-v_text_rect = pygame.Rect(20, 250, 150, 20)
+v_text_rect = pygame.Rect(20, STARTING_Y+TEXT_OFFSET_Y*2+ELEMENT_OFFSET_Y*2, 150, 20)
 v_text = UILabel(relative_rect=v_text_rect, manager=manager, text="Βολτόμετρο",
                  object_id="#button_texts")
 
-line_button_rect = pygame.Rect(20, 380, 150, 60)
+line_button_rect = pygame.Rect(20, STARTING_Y+TEXT_OFFSET_Y*4+ELEMENT_OFFSET_Y*3, 150, BUTTON_H)
 line_button = UIButton(relative_rect=line_button_rect, manager=manager, text="Καλώδιο",
                        object_id=ObjectID(class_id="@left_panel_buttons", object_id="#line_button"),
                        container=left_panel)
+
+led_button_rect = pygame.Rect(20, STARTING_Y+TEXT_OFFSET_Y*5+ELEMENT_OFFSET_Y*4, 150, BUTTON_H)
+led_button = UIButton(relative_rect=led_button_rect, manager=manager, text="Λαμπτήρας",
+                      object_id=ObjectID(class_id="@left_panel_buttons", object_id="#led_button"),
+                      container=left_panel)
+led_text_rect = pygame.Rect(20, STARTING_Y+TEXT_OFFSET_Y*4+ELEMENT_OFFSET_Y*4, 150, 20)
+led_text = UILabel(relative_rect=led_text_rect, manager=manager, text="Λαμπτήρας", object_id="#button_texts")
+
+switch_button_rect = pygame.Rect(20, STARTING_Y+TEXT_OFFSET_Y*6+ELEMENT_OFFSET_Y*5, 150, BUTTON_H)
+switch_button = UIButton(relative_rect=switch_button_rect, manager=manager, text="Διακόπτης",
+                      object_id=ObjectID(class_id="@left_panel_buttons", object_id="#switch_button"),
+                      container=left_panel)
+switch_text_rect = pygame.Rect(20, STARTING_Y+TEXT_OFFSET_Y*5+ELEMENT_OFFSET_Y*5, 150, 20)
+switch_text = UILabel(relative_rect=switch_text_rect, manager=manager, text="Διακόπτης", object_id="#button_texts")
+
+delete_button_rect = pygame.Rect(20, STARTING_Y+TEXT_OFFSET_Y*7+ELEMENT_OFFSET_Y*6+20, 150, BUTTON_H*0.6)
+delete_button = UIButton(relative_rect=delete_button_rect, manager=manager, text="Διαγραφή",
+                         object_id=ObjectID(class_id="@left_panel_buttons", object_id="#delete_button"), container=left_panel)
+
+delete_all_button_rect = pygame.Rect(20, STARTING_Y+TEXT_OFFSET_Y*8+ELEMENT_OFFSET_Y*7-30, 150, BUTTON_H*0.6)
+delete_all_button = UIButton(relative_rect=delete_all_button_rect, manager=manager, text="Διαγραφή Όλων",
+                             object_id=ObjectID(class_id="@left_panel_buttons", object_id="#delete_all_button"),
+                             container=left_panel)
 
 clock = pygame.time.Clock()
 debug_mode = False
@@ -75,6 +102,7 @@ show_available = False
 current_id = EMPTY_ID
 first_point = (0,0)
 second_time = False
+deletion_time = False
 
 test_surface = pygame.Surface((100,100))
 test_rect = pygame.Rect(0,0,100,100)
@@ -101,6 +129,15 @@ def toggle_second_wire_points():
     board.erase_and_clear_points()
     if show_available:
         board.update_points_for_second_wire(first_point)
+
+def toggle_deletion_points():
+    global show_available
+    global deletion_time
+    show_available = ~show_available
+    deletion_time = ~deletion_time
+    board.erase_and_clear_points()
+    if deletion_time:
+        board.update_points_for_deletion()
 
 # Only horizontal and vertical lines are allowed (for simplicity)
 def place_wires(first_point, second_point):
@@ -142,6 +179,8 @@ while running:
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
             if show_available:
                 toggle_available_points()
+            if deletion_time:
+                deletion_time = False
             if second_time:
                 second_time = False
             if event.ui_element == r_button:
@@ -164,6 +203,11 @@ while running:
                 mouse_component = Component("assets/sprites/line.png", mouse_rect.x, mouse_rect.y, True)
                 if not(show_available):
                     toggle_available_points()
+            if event.ui_element == delete_button:
+                current_id = EMPTY_ID
+                mouse_component = 0
+                if not(deletion_time):
+                    toggle_deletion_points()
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if show_available:
@@ -172,24 +216,31 @@ while running:
                     print(mx, my)
                     for point in board.points:
                         if point.clicked_me(mx, my):
-                            if current_id == LINE_ID:
-                                if second_time:
-                                    second_point = (point.i, point.j)
-                                    place_wires(first_point, second_point)
-                                    toggle_second_wire_points()
-                                else:
-                                    first_point = (point.i, point.j)
-                                    toggle_available_points() # remove points
-                                    toggle_second_wire_points() # show wire points
-                                mouse_component = 0
-                            else:
-                                print('i,j=',point.i,point.j)
-                                toggle_available_points()
-                                board.insert((point.i, point.j), current_id, rotated_component)
+                            if(deletion_time):
+                                toggle_deletion_points()
+                                board.insert((point.i, point.j), 0)
                                 board.update_components()
                                 current_id = EMPTY_ID
                                 mouse_component = 0
-                                rotated_component = False
+                            else:
+                                if current_id == LINE_ID:
+                                    if second_time:
+                                        second_point = (point.i, point.j)
+                                        place_wires(first_point, second_point)
+                                        toggle_second_wire_points()
+                                    else:
+                                        first_point = (point.i, point.j)
+                                        toggle_available_points() # remove points
+                                        toggle_second_wire_points() # show wire points
+                                    mouse_component = 0
+                                else:
+                                    print('i,j=',point.i,point.j) 
+                                    toggle_available_points()
+                                    board.insert((point.i, point.j), current_id, rotated_component)
+                                    board.update_components()
+                                    current_id = EMPTY_ID
+                                    mouse_component = 0
+                                    rotated_component = False
                 elif event.button == RIGHT_CLICK:
                     #print('right click')
                     if (mouse_component != 0) and (get_id_from_component(mouse_component) in ORIENTED_COMPONENT_IDS):

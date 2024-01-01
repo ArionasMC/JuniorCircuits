@@ -26,7 +26,7 @@ VERTICAL_ROTATION = 90
 LEFT_CLICK = 1
 RIGHT_CLICK = 3
 
-def get_id_from_component(com): # to be extended
+def get_id_from_component(com):
     path = com.path
     if "source" in path:
         return SOURCE_ID
@@ -36,5 +36,9 @@ def get_id_from_component(com): # to be extended
         return AMPEROMETER_ID
     elif "voltometer" in path:
         return VOLTOMETER_ID
+    elif "switch" in path:
+        return SWITCH_ID
+    elif "led" in path:
+        return LED_ID
     else:
         return EMPTY_ID
