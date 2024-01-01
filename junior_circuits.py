@@ -82,6 +82,7 @@ pygame.draw.rect(surface=test_surface, color=pygame.Color(0,0,0,255), rect=test_
 
 mouse_rect = pygame.Rect(0,0,49,49)
 mouse_component = 0
+rotated_component = False
 
 def toggle_available_points():
     global show_available
@@ -166,30 +167,36 @@ while running:
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if show_available:
-                #print('click(down)')
-                mx, my = pygame.mouse.get_pos()
-                print(mx, my)
-                for point in board.points:
-                    if point.clicked_me(mx, my):
-                        if current_id == LINE_ID:
-                            if second_time:
-                                second_point = (point.i, point.j)
-                                place_wires(first_point, second_point)
-                                toggle_second_wire_points()
-                                
-                                pass
+                if event.button == LEFT_CLICK:
+                    mx, my = pygame.mouse.get_pos()
+                    print(mx, my)
+                    for point in board.points:
+                        if point.clicked_me(mx, my):
+                            if current_id == LINE_ID:
+                                if second_time:
+                                    second_point = (point.i, point.j)
+                                    place_wires(first_point, second_point)
+                                    toggle_second_wire_points()
+                                else:
+                                    first_point = (point.i, point.j)
+                                    toggle_available_points() # remove points
+                                    toggle_second_wire_points() # show wire points
+                                mouse_component = 0
                             else:
-                                first_point = (point.i, point.j)
-                                toggle_available_points() # remove points
-                                toggle_second_wire_points() # show wire points
-                            mouse_component = 0
-                        else:
-                            print('i,j=',point.i,point.j)
-                            toggle_available_points()
-                            board.insert((point.i, point.j), current_id)
-                            board.update_components()
-                            current_id = EMPTY_ID
-                            mouse_component = 0
+                                print('i,j=',point.i,point.j)
+                                toggle_available_points()
+                                board.insert((point.i, point.j), current_id, rotated_component)
+                                board.update_components()
+                                current_id = EMPTY_ID
+                                mouse_component = 0
+                                rotated_component = False
+                elif event.button == RIGHT_CLICK:
+                    #print('right click')
+                    if (mouse_component != 0) and (get_id_from_component(mouse_component) in ORIENTED_COMPONENT_IDS):
+                        # Rotate component on mouse
+                        print('rotating')
+                        rotated_component = ~rotated_component
+                        mouse_component.surface = pygame.transform.rotate(mouse_component.surface, VERTICAL_ROTATION)
 
         manager.process_events(event)
 

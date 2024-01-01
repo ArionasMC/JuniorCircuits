@@ -22,9 +22,11 @@ class Board(pygame.sprite.Sprite):
         self.components = [] # tuples (Component, (pos_i, pos_j))
         self.points = []
         self.wires = []
+        self.rotations = np.zeros(shape=[dimX, dimY], dtype=int)
 
-    def insert(self, pos, item):
+    def insert(self, pos, item, rotate=False):
         self.board[pos[0], pos[1]] = item
+        self.rotations[pos[0], pos[1]] = rotate
 
     def read(self, pos):
         return self.board[pos[0], pos[1]]
@@ -54,13 +56,19 @@ class Board(pygame.sprite.Sprite):
                 x = (i+0.5)*self.gridWidth
                 y = (j+0.5)*self.gridHeight
                 if id == SOURCE_ID:
-                    self.components.append((Source(x, y, DEFAULT_VOLTAGE), (i, j)))
+                    source = Source(x, y, DEFAULT_VOLTAGE)
+                    source.horizontal = ~self.rotations[i, j]
+                    source.rotate()
+                    self.components.append((source, (i, j)))
                 if id == RESISTANCE_ID:
-                    self.components.append((Resistance(x, y, DEFAULT_RESISTANCE), (i, j)))
+                    resistance = Resistance(x, y, DEFAULT_RESISTANCE)
+                    resistance.horizontal = ~self.rotations[i, j]
+                    resistance.rotate()
+                    self.components.append((resistance, (i, j)))
                 if id == AMPEROMETER_ID:
-                    self.components.append((Component("assets/sprites/amperometer.png", x, y, True), (i, j)))
+                    self.components.append((Component("assets/sprites/amperometer.png", x, y, ~self.rotations[i,j]), (i, j)))
                 if id == VOLTOMETER_ID:
-                    self.components.append((Component("assets/sprites/voltometer.png", x, y, True), (i, j)))
+                    self.components.append((Component("assets/sprites/voltometer.png", x, y, ~self.rotations[i,j]), (i, j)))
                 if id == LINE_ID:
                     up, right, down, left = True, True, True, True # change it to more compact code
                     if (j-1) < 0: 
@@ -69,6 +77,9 @@ class Board(pygame.sprite.Sprite):
                         #print(self.board[i, j-1])
                         if (self.board[i, j-1] == EMPTY_ID) or (self.board[i, j-1] == SOURCE_ID): 
                             up = False
+                        else:
+                            if self.board[i, j-1] in ORIENTED_COMPONENT_IDS:
+                                up = not(self.is_horizontal_at(i, j-1))
 
                     if (j+1) >= self.dimY:
                         down = False
@@ -76,6 +87,9 @@ class Board(pygame.sprite.Sprite):
                         #print(self.board[i, j+1])
                         if (self.board[i, j+1] == EMPTY_ID) or (self.board[i, j+1] == SOURCE_ID):
                             down = False
+                        else:
+                            if self.board[i, j+1] in ORIENTED_COMPONENT_IDS:
+                                down = not(self.is_horizontal_at(i, j+1))
 
                     if (i-1) < 0:
                         left = False
@@ -83,6 +97,9 @@ class Board(pygame.sprite.Sprite):
                         #print(self.board[i-1, j])
                         if self.board[i-1, j] == EMPTY_ID:
                             left = False
+                        else:
+                            if self.board[i-1,j] in ORIENTED_COMPONENT_IDS:
+                                left = self.is_horizontal_at(i-1,j)
 
                     if (i+1) >= self.dimX:
                         right = False
@@ -90,6 +107,10 @@ class Board(pygame.sprite.Sprite):
                         #print(self.board[i+1, j])
                         if self.board[i+1, j] == EMPTY_ID:
                             right = False
+                        else:
+                            if self.board[i+1,j] in ORIENTED_COMPONENT_IDS:
+                                right = self.is_horizontal_at(i+1,j)
+
                     print('u=',up,'r=',right,'d=',down,'l=',left)
                     self.wires.append(Wire(up, right, down, left, x, y))
 
@@ -143,7 +164,8 @@ class Board(pygame.sprite.Sprite):
     def is_horizontal_at(self, i, j):
         for (com, pos) in self.components:
             if (pos[0] == i) and (pos[1] == j):
-                return com.horizontal 
+                return com.horizontal
+        return True
 
     def erase_and_clear_points(self):
         #print("erasing points...")
