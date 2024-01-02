@@ -167,6 +167,12 @@ class Board(pygame.sprite.Sprite):
             self.points.append(AvailablePoint(fpi, lj))
             lj += 1
     
+    def clear_board(self):
+        for i in range(self.dimX):
+            for j in range(self.dimY):
+                if (self.board[i, j] != EMPTY_ID) and (self.board[i, j] != SOURCE_ID):
+                    self.board[i, j] = EMPTY_ID
+
     def is_horizontal_at(self, i, j):
         for (com, pos) in self.components:
             if (pos[0] == i) and (pos[1] == j):

@@ -208,6 +208,11 @@ while running:
                 mouse_component = 0
                 if not(deletion_time):
                     toggle_deletion_points()
+            if event.ui_element == delete_all_button:
+                current_id = EMPTY_ID
+                mouse_component = 0
+                board.clear_board()
+                board.update_components()
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if show_available:
